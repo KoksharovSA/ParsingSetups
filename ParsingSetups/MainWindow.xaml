@@ -7,8 +7,31 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="60,161,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <TextBox x:Name="TextBoxDetail" HorizontalAlignment="Left" Height="400" Margin="207,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="575"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1" Grid.Row="2" Content="Добавить план наладки" HorizontalAlignment="Right" VerticalAlignment="Center" Width="194" Click="Button_Click" Height="20" Margin="0,0,5,0"/>
+            <GroupBox Grid.Column="1" Header="GroupBox" HorizontalAlignment="Left" Height="350" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="300">
+                <StackPanel>
+                    <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="268"/>
+                    <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="268"/>
+                    <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="268"/>
+                    <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="268"/>
+                    <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="268"/>
+                    <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="268"/>
 
+                </StackPanel>
+            </GroupBox>
+            <TreeView HorizontalAlignment="Right" Height="322" Margin="0,38,10,0" Grid.Row="1" VerticalAlignment="Top" Width="180"/>
+            <TextBox HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="180"/>
+
+        </Grid>
     </Grid>
 </Window>
