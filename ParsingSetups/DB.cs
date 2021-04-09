@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace ParsingSetups
             try
             {
                 SQLiteCommand command = sQLiteConnection.CreateCommand();
-                command.CommandText = "CREATE TABLE Setups(NumberSetup INTEGER NOT NULL UNIQUE, NameSetup TEXT NOT NULL, DirSetup TEXT, MaterialSetup TEXT, SizeListSetup TEXT, TimeSetup TEXT, NumberOfRunsSetup TEXT, WastePercentageSetup TEXT, WasteSMSetup TEXT, BusinessWasteSetup TEXT, DateSpellingSetup TEXT, DateRunSetup TEXT, DetailsSetup TEXT(3000), PRIMARY KEY(NumberSetup AUTOINCREMENT));";                
+                command.CommandText = "CREATE TABLE Setups(NumberSetup INTEGER NOT NULL UNIQUE, NameSetup TEXT NOT NULL, DirSetup TEXT, MaterialSetup TEXT, SizeListSetup TEXT, TimeSetup TEXT, NumberOfRunsSetup TEXT, WastePercentageSetup TEXT, WasteSMSetup TEXT, BusinessWasteSetup TEXT, DateSpellingSetup TEXT, DateRunSetup TEXT, DetailsSetup TEXT(3000), PRIMARY KEY(NumberSetup AUTOINCREMENT));";
                 command.ExecuteNonQuery();
                 sQLiteConnection.Close();
                 return true;
@@ -41,8 +42,8 @@ namespace ParsingSetups
                     string b = item.Value.ToString();
                     lineDetails += a + "&" + b + "|";
                 }
-                setup.BusinessWasteSetup = setup.BusinessWasteSetup == null ? "": setup.BusinessWasteSetup;
-                setup.DateRunSetup = setup.DateRunSetup == null ? "": setup.DateRunSetup;
+                setup.BusinessWasteSetup = setup.BusinessWasteSetup == null ? "" : setup.BusinessWasteSetup;
+                setup.DateRunSetup = setup.DateRunSetup == null ? "" : setup.DateRunSetup;
                 SQLiteCommand command1 = sQLiteConnection.CreateCommand();
                 SQLiteCommand command2 = sQLiteConnection.CreateCommand();
                 SQLiteCommand command3 = sQLiteConnection.CreateCommand();
@@ -62,7 +63,7 @@ namespace ParsingSetups
                     result = MessageBox.Show(message, caption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                     if (result == MessageBoxResult.Yes)
-                    {                        
+                    {
                         command3.CommandText = "DELETE FROM Setups WHERE NameSetup = '" + setup.NameSetup + "';";
                         command3.ExecuteNonQuery();
                         command2.CommandText = "INSERT OR IGNORE INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + setup.NameSetup + "', '" + setup.DirSetup + "', '" + setup.MaterialSetup + "', '" + setup.SizeListSetup + "', '" + setup.TimeSetup + "' , '" + setup.NumberOfRunsSetup + "' , '" + setup.WastePercentageSetup + "' , '" + setup.WasteSMSetup + "', '" + setup.BusinessWasteSetup + "', '" + setup.DateSpellingSetup + "', '" + setup.DateRunSetup + "', '" + lineDetails + "')";
@@ -77,6 +78,42 @@ namespace ParsingSetups
                 sQLiteConnection.Close();
                 MessageBox.Show(ex.Message, "Ошибка");
                 return false;
+            }
+        }
+
+        internal static Collection<Setup> ReadDBTools(SQLiteConnection sQLiteConnection)
+        {
+            sQLiteConnection.Open();
+            try
+            {
+                Collection<Setup> setups = new Collection<Setup>();
+                SQLiteCommand command = sQLiteConnection.CreateCommand();
+                command.CommandText = "SELECT * FROM Setups";
+                SQLiteDataReader sql = command.ExecuteReader();
+                while (sql.Read())
+                {
+                    Setup setup = new Setup();
+                    setup.NameSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.DirSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.MaterialSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.SizeListSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.TimeSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.NumberOfRunsSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.WastePercentageSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.DateSpellingSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.DateRunSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setups.Add(setup);
+
+                }
+                sql.Close();
+                sQLiteConnection.Close();
+                return setups;
+            }
+            catch (Exception ex)
+            {
+                sQLiteConnection.Close();
+                MessageBox.Show(ex.Message, "Ошибка");
+                return null;
             }
         }
 
