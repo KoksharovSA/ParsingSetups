@@ -18,32 +18,37 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="1" Grid.Row="2" Content="Добавить план наладки" HorizontalAlignment="Right" VerticalAlignment="Center" Width="194" Click="Button_Click" Height="20" Margin="0,0,5,0"/>
-            <GroupBox x:Name="GroupBoxSetup" Grid.Column="1" Header="GroupBox" HorizontalAlignment="Left" Height="350" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="572">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock x:Name="DirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="MaterialSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="SizeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="TimeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="NumberOfRunsSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="WastePercentageSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="WasteSMSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <TextBlock x:Name="BusinessWasteSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
-                        <StackPanel Orientation="Horizontal" >
-                            <TextBlock HorizontalAlignment="Left" Margin="0,4,5,0" TextWrapping="Wrap" Text="Дата внесения" VerticalAlignment="Top" Width="100" FontWeight="Bold" />
-                            <DatePicker Name="DateSpellingSetup" Width="150" BorderBrush="{x:Null}" />
+            <GroupBox x:Name="GroupBoxSetup" Grid.Column="1" Header="GroupBox" Margin="10,10,0,0" Grid.Row="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="270"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                            <TextBlock x:Name="TBDirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBlock x:Name="TBMaterialSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBlock x:Name="TBSizeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBlock x:Name="TBTimeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBlock x:Name="TBNumberOfRunsSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBlock x:Name="TBWastePercentageSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBlock x:Name="TBWasteSMSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <TextBox x:Name="TBBusinessWasteSetup" HorizontalAlignment="Left" Margin="10,10,5,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="268"/>
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock HorizontalAlignment="Left" Margin="0,4,5,0" TextWrapping="Wrap" Text="Дата внесения" VerticalAlignment="Top" Width="100" FontWeight="Bold" />
+                                <DatePicker Name="DateSpellingSetup" Width="150" BorderBrush="{x:Null}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock HorizontalAlignment="Left" Margin="0,4,5,0" TextWrapping="Wrap" Text="Дата работы" VerticalAlignment="Top" Width="100" FontWeight="Bold" />
+                                <DatePicker Name="DateRunSetupp" Width="150" BorderBrush="{x:Null}"/>
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" >
-                            <TextBlock HorizontalAlignment="Left" Margin="0,4,5,0" TextWrapping="Wrap" Text="Дата работы" VerticalAlignment="Top" Width="100" FontWeight="Bold" />
-                            <DatePicker Name="DateRunSetupp" Width="150" BorderBrush="{x:Null}"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <ListBox x:Name="DetailListBoxSetup" Width="280" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"/>
-                </StackPanel>
+                    <ListBox Grid.Column="1" x:Name="DetailListBoxSetup"/>
+                </Grid>
+                
                 
             </GroupBox>
-            <TextBox HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180"/>
-            <TreeView x:Name="TreeViewSetups" HorizontalAlignment="Right" Height="322" Margin="0,38,10,0" Grid.Row="1" VerticalAlignment="Top" Width="180"/>
+            <TextBox x:Name="TBSearch" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180" KeyUp="TBSearch_KeyUp"/>
+            <TreeView x:Name="TreeViewSetups" HorizontalAlignment="Right" Height="322" Margin="0,38,10,0" Grid.Row="1" VerticalAlignment="Top" Width="180" SelectedItemChanged="TreeViewSetups_SelectedItemChanged"/>
         </Grid>
     </Grid>
 </Window>

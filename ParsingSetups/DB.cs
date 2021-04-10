@@ -93,17 +93,23 @@ namespace ParsingSetups
                 while (sql.Read())
                 {
                     Setup setup = new Setup();
-                    setup.NameSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.DirSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.MaterialSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.SizeListSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.TimeSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.NumberOfRunsSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.WastePercentageSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.DateSpellingSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
-                    setup.DateRunSetup = Convert.ToString(sql["NomenclatureNumberTools"]) ?? "";
+                    setup.NameSetup = Convert.ToString(sql["NameSetup"]) ?? "";
+                    setup.DirSetup = Convert.ToString(sql["DirSetup"]) ?? "";
+                    setup.MaterialSetup = Convert.ToString(sql["MaterialSetup"]) ?? "";
+                    setup.SizeListSetup = Convert.ToString(sql["SizeListSetup"]) ?? "";
+                    setup.TimeSetup = Convert.ToString(sql["TimeSetup"]) ?? "";
+                    setup.NumberOfRunsSetup = Convert.ToString(sql["NumberOfRunsSetup"]) ?? "";
+                    setup.WastePercentageSetup = Convert.ToString(sql["WastePercentageSetup"]) ?? "";
+                    setup.DateSpellingSetup = Convert.ToString(sql["DateSpellingSetup"]) ?? "";
+                    setup.DateRunSetup = Convert.ToString(sql["DateRunSetup"]) ?? "";
+                    foreach (var item in Convert.ToString(sql["DetailsSetup"]).Split('|'))
+                    {
+                        if (item!="")
+                        {
+                            setup.DetailsSetup.Add(item.Split('&')?[0], Convert.ToInt32(item.Split('&')?[1]));
+                        }
+                    }
                     setups.Add(setup);
-
                 }
                 sql.Close();
                 sQLiteConnection.Close();
