@@ -30,59 +30,72 @@ namespace ParsingSetups
             }
         }
 
-        internal static bool AddDBSetup(string sQLiteConnection, Setup setup)
+        internal static bool AddDBSetup(SQLiteConnection sQLiteConnection, Collection<Setup> tempSetups)
         {
-            using (var connection = new SQLiteConnection(sQLiteConnection))
+            sQLiteConnection.Open();
+            foreach (var itemSetap in tempSetups)
             {
-                connection.Open();
                 try
                 {
                     string lineDetails = "";
-                    foreach (var item in setup.DetailsSetup)
+                    foreach (var item in itemSetap.DetailsSetup)
                     {
                         string a = item.Key;
                         string b = item.Value.ToString();
                         lineDetails += a + "&" + b + "|";
                     }
-                    setup.BusinessWasteSetup = setup.BusinessWasteSetup == null ? "" : setup.BusinessWasteSetup;
-                    setup.DateRunSetup = setup.DateRunSetup == null ? "" : setup.DateRunSetup;
-                    SQLiteCommand command1 = connection.CreateCommand();
-                    SQLiteCommand command2 = connection.CreateCommand();
-                    SQLiteCommand command3 = connection.CreateCommand();
-                    command1.CommandText = "SELECT * FROM Setups WHERE NameSetup = '" + setup.NameSetup + "';";
+                    itemSetap.BusinessWasteSetup = itemSetap.BusinessWasteSetup == null ? "" : itemSetap.BusinessWasteSetup;
+                    itemSetap.DateRunSetup = itemSetap.DateRunSetup == null ? "" : itemSetap.DateRunSetup;
+                    SQLiteCommand command1 = sQLiteConnection.CreateCommand();
+
+                    command1.CommandText = "SELECT * FROM Setups WHERE NameSetup = '" + itemSetap.NameSetup + "';";
                     var sql = command1.ExecuteReader().StepCount;
                     if (sql == 0)
                     {
-                        command2.CommandText = "INSERT INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + setup.NameSetup + "', '" + setup.DirSetup + "', '" + setup.MaterialSetup + "', '" + setup.SizeListSetup + "', '" + setup.TimeSetup + "' , '" + setup.NumberOfRunsSetup + "' , '" + setup.WastePercentageSetup + "' , '" + setup.WasteSMSetup + "', '" + setup.BusinessWasteSetup + "', '" + setup.DateSpellingSetup + "', '" + setup.DateRunSetup + "', '" + lineDetails + "')";
-                        command2.ExecuteNonQuery();
+                        using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
+                        {
+                            command2.CommandText = "INSERT INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + itemSetap.NameSetup + "', '" + itemSetap.DirSetup + "', '" + itemSetap.MaterialSetup + "', '" + itemSetap.SizeListSetup + "', '" + itemSetap.TimeSetup + "' , '" + itemSetap.NumberOfRunsSetup + "' , '" + itemSetap.WastePercentageSetup + "' , '" + itemSetap.WasteSMSetup + "', '" + itemSetap.BusinessWasteSetup + "', '" + itemSetap.DateSpellingSetup + "', '" + itemSetap.DateRunSetup + "', '" + lineDetails + "')";
+                            command2.ExecuteNonQuery();
+                        }
                     }
                     else
                     {
                         string message = "Данный план наладки уже существует, заменить его?";
-                        string caption = "Ошибка " + setup.NameSetup;
+                        string caption = "Ошибка " + itemSetap.NameSetup;
                         MessageBoxResult result;
 
                         result = MessageBox.Show(message, caption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                         if (result == MessageBoxResult.Yes)
                         {
-                            command3.CommandText = "DELETE FROM Setups WHERE NameSetup = '" + setup.NameSetup + "';";
-                            command3.ExecuteNonQuery();
-                            command2.CommandText = "INSERT INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + setup.NameSetup + "', '" + setup.DirSetup + "', '" + setup.MaterialSetup + "', '" + setup.SizeListSetup + "', '" + setup.TimeSetup + "' , '" + setup.NumberOfRunsSetup + "' , '" + setup.WastePercentageSetup + "' , '" + setup.WasteSMSetup + "', '" + setup.BusinessWasteSetup + "', '" + setup.DateSpellingSetup + "', '" + setup.DateRunSetup + "', '" + lineDetails + "')";
-                            command2.ExecuteNonQuery();
+                            using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
+                            {
+                                command2.CommandText = "UPDATE Setups SET NameSetup = '" + itemSetap.NameSetup + "', DirSetup = '" + itemSetap.DirSetup + "', MaterialSetup = '" + itemSetap.MaterialSetup + "', SizeListSetup = '" + itemSetap.SizeListSetup + "', TimeSetup = '" + itemSetap.TimeSetup + "', NumberOfRunsSetup = '" + itemSetap.NumberOfRunsSetup + "', WastePercentageSetup = '" + itemSetap.WastePercentageSetup + "', WasteSMSetup = '" + itemSetap.WasteSMSetup + "', BusinessWasteSetup = '" + itemSetap.BusinessWasteSetup + "', DateSpellingSetup = '" + itemSetap.DateSpellingSetup + "', DateRunSetup = '" + itemSetap.DateRunSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + itemSetap.NameSetup + "';";
+                                command2.ExecuteNonQuery();
+
+                            }
+                            //using (SQLiteCommand command3 = connection.CreateCommand())
+                            //{
+                            //    command3.CommandText = "DELETE FROM Setups WHERE NameSetup = '" + setup.NameSetup + "';";
+                            //    command3.ExecuteNonQuery();
+                            //}
+                            //using (SQLiteCommand command2 = connection.CreateCommand())
+                            //{
+                            //    command2.CommandText = "INSERT INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + setup.NameSetup + "', '" + setup.DirSetup + "', '" + setup.MaterialSetup + "', '" + setup.SizeListSetup + "', '" + setup.TimeSetup + "' , '" + setup.NumberOfRunsSetup + "' , '" + setup.WastePercentageSetup + "' , '" + setup.WasteSMSetup + "', '" + setup.BusinessWasteSetup + "', '" + setup.DateSpellingSetup + "', '" + setup.DateRunSetup + "', '" + lineDetails + "')";
+                            //    command2.ExecuteNonQuery();
+                            //}
                         }
-                    }
-                    //connection.Close();
-                    return true;
+                    }                    
                 }
                 catch (Exception ex)
                 {
-                    //connection.Close();
+                    sQLiteConnection.Close();
                     MessageBox.Show(ex.Message, "Ошибка");
                     return false;
-                }
+                }               
             }
-
+            sQLiteConnection.Close();
+            return true;
         }
 
         internal static Collection<Setup> ReadDBTools(string sQLiteConnection)
@@ -128,7 +141,7 @@ namespace ParsingSetups
                     return null;
                 }
             }
-            
+
         }
 
     }

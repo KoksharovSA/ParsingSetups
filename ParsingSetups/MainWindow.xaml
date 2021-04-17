@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ParsingSetups"
         mc:Ignorable="d"
-        Title="Учёт работы станочного цеха" Height="450" Width="800">
+        Title="Учёт работы станочного цеха" Height="450" Width="1000">
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -15,7 +15,8 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="265*"/>
+                <ColumnDefinition Width="131*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Grid.Row="2" Content="Добавить план наладки" HorizontalAlignment="Right" VerticalAlignment="Center" Width="180" Click="Button_Click" Height="20" Margin="0,3,10,2"/>
             <GroupBox x:Name="GroupBoxSetup" Grid.Column="1" Header="GroupBox" Margin="10,10,5,0" Grid.Row="1">
@@ -49,7 +50,8 @@
 
             </GroupBox>
             <TextBox x:Name="TBSearch" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180" KeyUp="TBSearch_KeyUp"/>
-            <TreeView x:Name="TreeViewSetups" HorizontalAlignment="Right" Margin="0,38,10,5" Grid.Row="1" VerticalAlignment="Stretch" Width="180" SelectedItemChanged="TreeViewSetups_SelectedItemChanged"/>
+            <TreeView x:Name="TreeViewSetups" HorizontalAlignment="Right" Margin="0,38,10,5" Grid.Row="1" VerticalAlignment="Stretch" Width="180" SelectedItemChanged="TreeViewSetups_SelectedItemChanged" MouseDoubleClick="TreeViewSetups_MouseDoubleClick"/>
+            <ListBox Grid.Row="1" Grid.Column="2" x:Name="AllDetailListBoxSetup" Margin="5,27,5,5"/>
         </Grid>
     </Grid>
 </Window>

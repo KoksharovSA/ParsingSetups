@@ -25,7 +25,7 @@ namespace ParsingSetups
     public partial class MainWindow : Window
     {
         Collection<Setup> setups = new Collection<Setup>();
-        string QLiteConnection = "Data source=C:\\Users\\User\\Desktop\\Setups.db;Version=3";
+        string QLiteConnection = "Data source=C:\\1\\Setups.db;Version=3";
         public MainWindow()
         {
             InitializeComponent();
@@ -40,11 +40,12 @@ namespace ParsingSetups
             openFile.Multiselect = true;
             openFile.Filter = "Setup files (*.html)|*.html";
             openFile.ShowDialog();
+            Collection<Setup> tempSetups = new Collection<Setup>();
             foreach (var dir in openFile.FileNames)
             {
-                Setup setup = ParseSetup(dir);
-                DB.AddDBSetup(QLiteConnection, setup);
+                tempSetups.Add(ParseSetup(dir));
             }
+            DB.AddDBSetup(new SQLiteConnection(QLiteConnection), tempSetups);
             LoadTreeView(setups);
         }
 
@@ -182,25 +183,28 @@ namespace ParsingSetups
 
         private void TreeViewSetups_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            GroupBoxSetup.Header = (TreeViewSetups.SelectedItem as TextBlock)?.Text;
-            TBDirSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.DirSetup;
-            TBMaterialSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.MaterialSetup;
-            TBSizeSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.SizeListSetup;
-            TBTimeSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.TimeSetup;
-            TBNumberOfRunsSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.NumberOfRunsSetup;
-            TBWastePercentageSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.WastePercentageSetup;
-            TBWasteSMSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.WasteSMSetup + " см2";
-            TBBusinessWasteSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.BusinessWasteSetup;
-            DateSpellingSetup.Text = DateTime.Parse(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.DateSpellingSetup).ToShortDateString();
-            if (setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.DateRunSetup !="")
+            if (TreeViewSetups.SelectedItem != null)
             {
-                DateRunSetupp.Text = DateTime.Parse(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text).DateRunSetup).ToShortDateString();
-            }
-            DetailListBoxSetup.Items.Clear();
-            foreach (var item in setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text).DetailsSetup)
-            {
-                DetailListBoxSetup.Items.Add(new TextBlock() { TextWrapping = TextWrapping.Wrap, Text = item.Key + " (" + item.Value + " / " + item.Value * Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text).NumberOfRunsSetup) + ")" });
-            }
+                GroupBoxSetup.Header = (TreeViewSetups.SelectedItem as TextBlock)?.Text;
+                TBDirSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.DirSetup;
+                TBMaterialSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.MaterialSetup;
+                TBSizeSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.SizeListSetup;
+                TBTimeSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.TimeSetup;
+                TBNumberOfRunsSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.NumberOfRunsSetup;
+                TBWastePercentageSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.WastePercentageSetup;
+                TBWasteSMSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.WasteSMSetup + " см2";
+                TBBusinessWasteSetup.Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.BusinessWasteSetup;
+                DateSpellingSetup.Text = DateTime.Parse(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.DateSpellingSetup).ToShortDateString();
+                if (setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text)?.DateRunSetup != "")
+                {
+                    DateRunSetupp.Text = DateTime.Parse(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text).DateRunSetup).ToShortDateString();
+                }
+                DetailListBoxSetup.Items.Clear();
+                foreach (var item in setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text).DetailsSetup)
+                {
+                    DetailListBoxSetup.Items.Add(new TextBlock() { TextWrapping = TextWrapping.Wrap, Text = item.Key + " (" + item.Value + " / " + item.Value * Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text).NumberOfRunsSetup) + ")" });
+                }
+            }      
         }
 
         private void TBSearch_KeyUp(object sender, KeyEventArgs e)
@@ -213,6 +217,22 @@ namespace ParsingSetups
             {
                 LoadTreeView(setups);
             }
+        }
+
+        private void TreeViewSetups_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            
+            if (AllDetailListBoxSetup.Items.)
+            {
+                StackPanel stackPanel = new StackPanel() { Name = (TreeViewSetups.SelectedItem as TextBlock)?.Text };
+                stackPanel.Orientation = Orientation.Horizontal;
+                TextBox textBox = new TextBox() { Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.NumberOfRunsSetup };
+                TextBlock textBlock = new TextBlock() { Text = (TreeViewSetups.SelectedItem as TextBlock)?.Text };
+                stackPanel.Children.Add(textBox);
+                stackPanel.Children.Add(textBlock);
+                AllDetailListBoxSetup.Items.Add(stackPanel);
+            }
+
         }
     }
 }
