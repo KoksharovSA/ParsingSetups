@@ -107,6 +107,12 @@
   <ItemGroup>
     <Resource Include="1489186762.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="kisspng.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="kisspng-computer-icons-portable-network-graphics-download-refresh-svg-png-icon-free-download-372448-onl-5b76aee381b289.4918287215345046755313.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net45\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net45\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

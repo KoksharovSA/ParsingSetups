@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Data.SQLite;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -11,7 +12,7 @@ namespace ParsingSetups
 {
     class DB
     {
-        internal static bool CreateDBTools(SQLiteConnection sQLiteConnection)
+        internal static bool CreateDBSetups(SQLiteConnection sQLiteConnection)
         {
             sQLiteConnection.Open();
             try
@@ -28,6 +29,74 @@ namespace ParsingSetups
                 MessageBox.Show(ex.Message, "Ошибка");
                 return false;
             }
+        }
+        internal static bool UpdateDBSetup(SQLiteConnection sQLiteConnection, Setup setup)
+        {
+            sQLiteConnection.Open();
+
+            try
+            {
+                string lineDetails = "";
+                foreach (var item in setup.DetailsSetup)
+                {
+                    string a = item.Key;
+                    string b = item.Value.ToString();
+                    lineDetails += a + "&" + b + "|";
+                }
+                setup.BusinessWasteSetup = setup.BusinessWasteSetup == null ? "" : setup.BusinessWasteSetup;
+                setup.DateRunSetup = setup.DateRunSetup == null ? "" : setup.DateRunSetup;
+
+                using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
+                {
+                    command2.CommandText = "UPDATE Setups SET NameSetup = '" + setup.NameSetup + "', DirSetup = '" + setup.DirSetup + "', MaterialSetup = '" + setup.MaterialSetup + "', SizeListSetup = '" + setup.SizeListSetup + "', TimeSetup = '" + setup.TimeSetup + "', NumberOfRunsSetup = '" + setup.NumberOfRunsSetup + "', WastePercentageSetup = '" + setup.WastePercentageSetup + "', WasteSMSetup = '" + setup.WasteSMSetup + "', BusinessWasteSetup = '" + setup.BusinessWasteSetup + "', DateSpellingSetup = '" + setup.DateSpellingSetup + "', DateRunSetup = '" + setup.DateRunSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + setup.NameSetup + "';";
+                    //Thread.Sleep(1000);
+                    command2.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                sQLiteConnection.Close();
+                MessageBox.Show(ex.Message, "Ошибка");
+                return false;
+            }
+
+            sQLiteConnection.Close();
+            return true;
+        }
+
+        internal static bool UpdateDBSetup(SQLiteConnection sQLiteConnection, Collection<Setup> tempSetups)
+        {
+            sQLiteConnection.Open();
+            foreach (var itemSetap in tempSetups)
+            {
+                try
+                {
+                    string lineDetails = "";
+                    foreach (var item in itemSetap.DetailsSetup)
+                    {
+                        string a = item.Key;
+                        string b = item.Value.ToString();
+                        lineDetails += a + "&" + b + "|";
+                    }
+                    itemSetap.BusinessWasteSetup = itemSetap.BusinessWasteSetup == null ? "" : itemSetap.BusinessWasteSetup;
+                    itemSetap.DateRunSetup = itemSetap.DateRunSetup == null ? "" : itemSetap.DateRunSetup;
+
+                    using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
+                    {
+                        command2.CommandText = "UPDATE Setups SET NameSetup = '" + itemSetap.NameSetup + "', DirSetup = '" + itemSetap.DirSetup + "', MaterialSetup = '" + itemSetap.MaterialSetup + "', SizeListSetup = '" + itemSetap.SizeListSetup + "', TimeSetup = '" + itemSetap.TimeSetup + "', NumberOfRunsSetup = '" + itemSetap.NumberOfRunsSetup + "', WastePercentageSetup = '" + itemSetap.WastePercentageSetup + "', WasteSMSetup = '" + itemSetap.WasteSMSetup + "', BusinessWasteSetup = '" + itemSetap.BusinessWasteSetup + "', DateSpellingSetup = '" + itemSetap.DateSpellingSetup + "', DateRunSetup = '" + itemSetap.DateRunSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + itemSetap.NameSetup + "';";
+                        //Thread.Sleep(1000);
+                        command2.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    sQLiteConnection.Close();
+                    MessageBox.Show(ex.Message, "Ошибка");
+                    return false;
+                }
+            }
+            sQLiteConnection.Close();
+            return true;
         }
 
         internal static bool AddDBSetup(SQLiteConnection sQLiteConnection, Collection<Setup> tempSetups)
@@ -46,11 +115,13 @@ namespace ParsingSetups
                     }
                     itemSetap.BusinessWasteSetup = itemSetap.BusinessWasteSetup == null ? "" : itemSetap.BusinessWasteSetup;
                     itemSetap.DateRunSetup = itemSetap.DateRunSetup == null ? "" : itemSetap.DateRunSetup;
-                    SQLiteCommand command1 = sQLiteConnection.CreateCommand();
-
-                    command1.CommandText = "SELECT * FROM Setups WHERE NameSetup = '" + itemSetap.NameSetup + "';";
-                    var sql = command1.ExecuteReader().StepCount;
-                    if (sql == 0)
+                    SQLiteDataReader sql;
+                    using (SQLiteCommand command1 = sQLiteConnection.CreateCommand())
+                    {
+                        command1.CommandText = "SELECT * FROM Setups WHERE NOT EXISTS (SELECT * FROM Setups WHERE NameSetup = '" + itemSetap.NameSetup + "');";
+                        sql = command1.ExecuteReader();
+                    }
+                    if (sql.Read())
                     {
                         using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
                         {
@@ -71,28 +142,19 @@ namespace ParsingSetups
                             using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
                             {
                                 command2.CommandText = "UPDATE Setups SET NameSetup = '" + itemSetap.NameSetup + "', DirSetup = '" + itemSetap.DirSetup + "', MaterialSetup = '" + itemSetap.MaterialSetup + "', SizeListSetup = '" + itemSetap.SizeListSetup + "', TimeSetup = '" + itemSetap.TimeSetup + "', NumberOfRunsSetup = '" + itemSetap.NumberOfRunsSetup + "', WastePercentageSetup = '" + itemSetap.WastePercentageSetup + "', WasteSMSetup = '" + itemSetap.WasteSMSetup + "', BusinessWasteSetup = '" + itemSetap.BusinessWasteSetup + "', DateSpellingSetup = '" + itemSetap.DateSpellingSetup + "', DateRunSetup = '" + itemSetap.DateRunSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + itemSetap.NameSetup + "';";
+                                //Thread.Sleep(1000);
                                 command2.ExecuteNonQuery();
-
                             }
-                            //using (SQLiteCommand command3 = connection.CreateCommand())
-                            //{
-                            //    command3.CommandText = "DELETE FROM Setups WHERE NameSetup = '" + setup.NameSetup + "';";
-                            //    command3.ExecuteNonQuery();
-                            //}
-                            //using (SQLiteCommand command2 = connection.CreateCommand())
-                            //{
-                            //    command2.CommandText = "INSERT INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + setup.NameSetup + "', '" + setup.DirSetup + "', '" + setup.MaterialSetup + "', '" + setup.SizeListSetup + "', '" + setup.TimeSetup + "' , '" + setup.NumberOfRunsSetup + "' , '" + setup.WastePercentageSetup + "' , '" + setup.WasteSMSetup + "', '" + setup.BusinessWasteSetup + "', '" + setup.DateSpellingSetup + "', '" + setup.DateRunSetup + "', '" + lineDetails + "')";
-                            //    command2.ExecuteNonQuery();
-                            //}
+
                         }
-                    }                    
+                    }
                 }
                 catch (Exception ex)
                 {
                     sQLiteConnection.Close();
                     MessageBox.Show(ex.Message, "Ошибка");
                     return false;
-                }               
+                }
             }
             sQLiteConnection.Close();
             return true;
@@ -119,6 +181,7 @@ namespace ParsingSetups
                         setup.TimeSetup = Convert.ToString(sql["TimeSetup"]) ?? "";
                         setup.NumberOfRunsSetup = Convert.ToString(sql["NumberOfRunsSetup"]) ?? "";
                         setup.WastePercentageSetup = Convert.ToString(sql["WastePercentageSetup"]) ?? "";
+                        setup.BusinessWasteSetup = Convert.ToString(sql["BusinessWasteSetup"]) ?? "";
                         setup.DateSpellingSetup = Convert.ToString(sql["DateSpellingSetup"]) ?? "";
                         setup.DateRunSetup = Convert.ToString(sql["DateRunSetup"]) ?? "";
                         foreach (var item in Convert.ToString(sql["DetailsSetup"]).Split('|'))

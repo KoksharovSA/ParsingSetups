@@ -38,13 +38,19 @@ namespace ParsingSetups
             get 
             {
                 double WasteSM = 0;
+                double BusinessWasteSM = 0;
+                if (BusinessWasteSetup != null && BusinessWasteSetup != "")
+                {
+                    BusinessWasteSM = (Convert.ToDouble(BusinessWasteSetup.Replace('х', 'x').Split('x')[0].Trim().Replace('.', ',')) / 10) * (Convert.ToDouble(BusinessWasteSetup.Replace('х', 'x').Split('x')[1].Trim().Replace('.', ',')) / 10);
+                }
                 if (WastePercentageSetup!= null && SizeListSetup != null)
                 {
-                    WasteSM = (Convert.ToDouble(SizeListSetup.Split('x')[0].Trim().Replace('.', ',')) /10) * (Convert.ToDouble(SizeListSetup.Split('x')[1].Trim().Replace('.', ',')) / 10) 
+                    WasteSM = (Convert.ToDouble(SizeListSetup.Replace('х', 'x').Split('x')[0].Trim().Replace('.', ',')) /10) * (Convert.ToDouble(SizeListSetup.Replace('х', 'x').Split('x')[1].Trim().Replace('.', ',')) / 10) 
                         * (Convert.ToDouble(WastePercentageSetup.Trim().Replace('.', ','))/100);
                 }
-                return WasteSM.ToString();
-            } 
+                return (WasteSM - BusinessWasteSM).ToString();
+            }
+
         }
         public string BusinessWasteSetup { get; set; }
         public string DateSpellingSetup { get; set; }
