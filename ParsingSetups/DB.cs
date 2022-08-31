@@ -30,6 +30,35 @@ namespace ParsingSetups
                 return false;
             }
         }
+
+        internal static bool AddDBDetails(SQLiteConnection sQLiteConnection, Collection<Detail> details)
+        {
+            sQLiteConnection.Open();
+            foreach (var item in details)
+            {
+                try
+                {
+                    using (SQLiteCommand command1 = sQLiteConnection.CreateCommand())
+                    {
+                        command1.CommandText = "INSERT OR IGNORE INTO Details(NameDetail, SizesDetail, SurfaceDetail, TimeOfProcessing, CuttingLength, WeightDetail, Material, BendLength) VALUES('" + item.NameDetail + "', '" + item.SizesDetail + "', '" + item.SurfaceDetail + "', '" + item.TimeOfProcessing + "', '" + item.CuttingLength + "', '" + item.WeightDetail + "', '" + item.MaterialDetail + "', '" + item.BendLength + "')";
+                        command1.ExecuteNonQuery();
+                    }                    
+                }
+                catch (Exception ex)
+                {
+                    sQLiteConnection.Close();
+                    MessageBox.Show(ex.Message, "Ошибка");
+                    return false;
+                }
+            }
+            sQLiteConnection.Close();
+            return true;
+        }
+
+
+
+
+
         internal static bool UpdateDBSetup(SQLiteConnection sQLiteConnection, Setup setup)
         {
             sQLiteConnection.Open();
@@ -49,6 +78,30 @@ namespace ParsingSetups
                 using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
                 {
                     command2.CommandText = "UPDATE Setups SET NameSetup = '" + setup.NameSetup + "', DirSetup = '" + setup.DirSetup + "', MaterialSetup = '" + setup.MaterialSetup + "', SizeListSetup = '" + setup.SizeListSetup + "', TimeSetup = '" + setup.TimeSetup + "', NumberOfRunsSetup = '" + setup.NumberOfRunsSetup + "', WastePercentageSetup = '" + setup.WastePercentageSetup + "', WasteSMSetup = '" + setup.WasteSMSetup + "', BusinessWasteSetup = '" + setup.BusinessWasteSetup + "', DateSpellingSetup = '" + setup.DateSpellingSetup + "', DateRunSetup = '" + setup.DateRunSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + setup.NameSetup + "';";
+                    //Thread.Sleep(1000);
+                    command2.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                sQLiteConnection.Close();
+                MessageBox.Show(ex.Message, "Ошибка");
+                return false;
+            }
+
+            sQLiteConnection.Close();
+            return true;
+        }
+        
+        internal static bool UpdateDBDetail(SQLiteConnection sQLiteConnection, Detail detail)
+        {
+            sQLiteConnection.Open();
+
+            try
+            {
+                using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
+                {
+                    command2.CommandText = "UPDATE Details SET BendLength = '" + detail.BendLength + "' WHERE NameDetail = '" + detail.NameDetail + "';";
                     //Thread.Sleep(1000);
                     command2.ExecuteNonQuery();
                 }
@@ -118,7 +171,7 @@ namespace ParsingSetups
                     SQLiteDataReader sql;
                     using (SQLiteCommand command1 = sQLiteConnection.CreateCommand())
                     {
-                        command1.CommandText = "SELECT * FROM Setups WHERE NOT EXISTS (SELECT * FROM Setups WHERE NameSetup = '" + itemSetap.NameSetup + "');";
+                        command1.CommandText = "SELECT * FROM Setups WHERE NOT EXISTS (SELECT * FROM Setups WHERE NameSetup = '" + itemSetap.NameSetup + "' AND DirSetup = '" + itemSetap.DirSetup + "' AND WastePercentageSetup = '" + itemSetap.WastePercentageSetup + "');";
                         sql = command1.ExecuteReader();
                     }
                     if (sql.Read())
@@ -127,6 +180,12 @@ namespace ParsingSetups
                         {
                             command2.CommandText = "INSERT INTO Setups(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + itemSetap.NameSetup + "', '" + itemSetap.DirSetup + "', '" + itemSetap.MaterialSetup + "', '" + itemSetap.SizeListSetup + "', '" + itemSetap.TimeSetup + "' , '" + itemSetap.NumberOfRunsSetup + "' , '" + itemSetap.WastePercentageSetup + "' , '" + itemSetap.WasteSMSetup + "', '" + itemSetap.BusinessWasteSetup + "', '" + itemSetap.DateSpellingSetup + "', '" + itemSetap.DateRunSetup + "', '" + lineDetails + "')";
                             command2.ExecuteNonQuery();
+                            command2.CommandText = "INSERT INTO Details(NameSetup, DirSetup, MaterialSetup, SizeListSetup, TimeSetup, NumberOfRunsSetup, WastePercentageSetup, WasteSMSetup, BusinessWasteSetup, DateSpellingSetup, DateRunSetup, DetailsSetup)VALUES('" + itemSetap.NameSetup + "', '" + itemSetap.DirSetup + "', '" + itemSetap.MaterialSetup + "', '" + itemSetap.SizeListSetup + "', '" + itemSetap.TimeSetup + "' , '" + itemSetap.NumberOfRunsSetup + "' , '" + itemSetap.WastePercentageSetup + "' , '" + itemSetap.WasteSMSetup + "', '" + itemSetap.BusinessWasteSetup + "', '" + itemSetap.DateSpellingSetup + "', '" + itemSetap.DateRunSetup + "', '" + lineDetails + "')";
+                            foreach(Detail item in itemSetap.Details)
+                            {
+                                command2.CommandText = "INSERT OR IGNORE INTO Details(NameDetail, SizesDetail, SurfaceDetail, TimeOfProcessing, CuttingLength, WeightDetail, Material, BendLength) VALUES('" + item.NameDetail + "', '" + item.SizesDetail?.Replace('.',',') + "', '" + item.SurfaceDetail?.Replace('.', ',') + "', '" + item.TimeOfProcessing?.Replace('.', ',') + "', '" + item.CuttingLength?.Replace('.', ',') + "', '" + item.WeightDetail?.Replace('.', ',') + "', '" + itemSetap?.MaterialSetup + "', '" + item.BendLength?.Replace('.', ',') + "')";
+                                command2.ExecuteNonQuery();
+                            }                            
                         }
                     }
                     else
@@ -141,9 +200,14 @@ namespace ParsingSetups
                         {
                             using (SQLiteCommand command2 = sQLiteConnection.CreateCommand())
                             {
-                                command2.CommandText = "UPDATE Setups SET NameSetup = '" + itemSetap.NameSetup + "', DirSetup = '" + itemSetap.DirSetup + "', MaterialSetup = '" + itemSetap.MaterialSetup + "', SizeListSetup = '" + itemSetap.SizeListSetup + "', TimeSetup = '" + itemSetap.TimeSetup + "', NumberOfRunsSetup = '" + itemSetap.NumberOfRunsSetup + "', WastePercentageSetup = '" + itemSetap.WastePercentageSetup + "', WasteSMSetup = '" + itemSetap.WasteSMSetup + "', BusinessWasteSetup = '" + itemSetap.BusinessWasteSetup + "', DateSpellingSetup = '" + itemSetap.DateSpellingSetup + "', DateRunSetup = '" + itemSetap.DateRunSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + itemSetap.NameSetup + "';";
+                                command2.CommandText = "UPDATE Setups SET NameSetup = '" + itemSetap.NameSetup + "', DirSetup = '" + itemSetap.DirSetup + "', MaterialSetup = '" + itemSetap.MaterialSetup + "', SizeListSetup = '" + itemSetap.SizeListSetup + "', TimeSetup = '" + itemSetap.TimeSetup + "', NumberOfRunsSetup = '" + itemSetap.NumberOfRunsSetup + "', WastePercentageSetup = '" + itemSetap.WastePercentageSetup + "', WasteSMSetup = '" + itemSetap.WasteSMSetup + "', BusinessWasteSetup = '" + itemSetap.BusinessWasteSetup + "', DateSpellingSetup = '" + itemSetap.DateSpellingSetup + "', DetailsSetup = '" + lineDetails + "' WHERE NameSetup = '" + itemSetap.NameSetup + "';";                               
                                 //Thread.Sleep(1000);
                                 command2.ExecuteNonQuery();
+                                foreach (Detail item in itemSetap.Details)
+                                {
+                                    command2.CommandText = "INSERT OR IGNORE INTO Details(NameDetail, SizesDetail, SurfaceDetail, TimeOfProcessing, CuttingLength, WeightDetail, Material, BendLength) VALUES('" + item.NameDetail + "', '" + item.SizesDetail?.Replace('.', ',') + "', '" + item.SurfaceDetail?.Replace('.', ',') + "', '" + item.TimeOfProcessing?.Replace('.', ',') + "', '" + item.CuttingLength?.Replace('.', ',') + "', '" + item.WeightDetail?.Replace('.', ',') + "', '" + itemSetap.MaterialSetup?.Replace('.', ',') + "', '" + item.BendLength?.Replace('.', ',') + "')";
+                                    command2.ExecuteNonQuery();
+                                }
                             }
 
                         }
@@ -159,6 +223,68 @@ namespace ParsingSetups
             sQLiteConnection.Close();
             return true;
         }
+
+        internal static void DBExecuteNonQuery(string sQLiteConnection, string request)
+        {
+            using (var connection = new SQLiteConnection(sQLiteConnection))
+            {
+                connection.Open();
+                try
+                {
+                    SQLiteCommand command = connection.CreateCommand();
+                    command.CommandText = request;
+                    command.ExecuteNonQuery();                    
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    connection.Close();
+                    MessageBox.Show(ex.Message, "Ошибка");;
+                }
+            }
+
+        }
+
+
+        internal static Collection<Detail> ReadDBDetails(string sQLiteConnection)
+        {
+            using (var connection = new SQLiteConnection(sQLiteConnection))
+            {
+                connection.Open();
+                try
+                {
+                    Collection<Detail> details = new Collection<Detail>();
+                    SQLiteCommand command = connection.CreateCommand();
+                    command.CommandText = "SELECT * FROM NewDetails";
+                    SQLiteDataReader sql = command.ExecuteReader();
+                    while (sql.Read())
+                    {
+                        Detail detail = new Detail();
+                        detail.NameDetail = Convert.ToString(sql["NameDetail"]) ?? "";
+                        detail.SizesDetail = Convert.ToString(sql["SizesDetail"]) ?? "";
+                        detail.SurfaceDetail = Convert.ToString(sql["SurfaceDetail"]) ?? "";
+                        detail.TimeOfProcessing = Convert.ToString(sql["TimeOfProcessing"]) ?? "";
+                        detail.CuttingLength = Convert.ToString(sql["CuttingLength"]) ?? "";
+                        detail.WeightDetail = Convert.ToString(sql["WeightDetail"]) ?? "";
+                        detail.MaterialDetail = Convert.ToString(sql["Material"]) ?? "";
+                        detail.BendLength = Convert.ToString(sql["BendLength"]) ?? "";
+
+                        details.Add(detail);
+                    }
+                    sql.Close();
+                    connection.Close();
+                    return details;
+                }
+                catch (Exception ex)
+                {
+                    connection.Close();
+                    MessageBox.Show(ex.Message, "Ошибка");
+                    return null;
+                }
+            }
+
+        }
+
 
         internal static Collection<Setup> ReadDBTools(string sQLiteConnection)
         {
@@ -190,6 +316,10 @@ namespace ParsingSetups
                             {
                                 setup.DetailsSetup.Add(item.Split('&')?[0], Convert.ToInt32(item.Split('&')?[1]));
                             }
+                        }
+                        if (setups.Select(x=>x.NameSetup).Contains(setup.NameSetup)||setups.Select(x => x.NameSetup).Contains(setup.NameSetup+"("))
+                        {
+                            setup.NameSetup += "("+setups.Select(x => x.NameSetup).Where(x=>(x == setup.NameSetup|| x == setup.NameSetup + "(")).Count()+")";
                         }
                         setups.Add(setup);
                     }

@@ -6,16 +6,11 @@ using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace ParsingSetups
 {
@@ -25,13 +20,15 @@ namespace ParsingSetups
     public partial class MainWindow : Window
     {
         IEnumerable<Setup> setups = new Collection<Setup>();
+        IEnumerable<Detail> details = new Collection<Detail>();
         string QLiteConnection = "Data source=Setups.db;Version=3";
         public MainWindow()
         {
             InitializeComponent();
             //DB.CreateDBTools(QLiteConnection));
             setups = DB.ReadDBTools(QLiteConnection);
-            LoadTreeView(setups);
+            details = DB.ReadDBDetails(QLiteConnection);
+            LoadTreeView(setups, details);
 
         }
 
@@ -52,17 +49,27 @@ namespace ParsingSetups
             }
             DB.AddDBSetup(new SQLiteConnection(QLiteConnection), tempSetups);
             setups = DB.ReadDBTools(QLiteConnection);
-            LoadTreeView(setups);
+            LoadTreeView(setups, details);
         }
 
-        internal bool LoadTreeView(IEnumerable<Setup> setups)
+        internal bool LoadTreeView(IEnumerable<Setup> setups, IEnumerable<Detail> details)
         {
             TreeViewSetups.Items.Clear();
             foreach (var item in setups)
             {
                 TreeViewSetups.Items.Add(new TextBlock() { Text = item.NameSetup });
+            }            
+            TreeViewDetails.Items.Clear();
+            if (details !=null)
+            {
+                foreach (var item in details)
+                {
+                    TreeViewDetails.Items.Add(new TextBlock() { Text = item.NameDetail , Foreground = item.BendLength != "" ? Brushes.Black : Brushes.Red });
+                }
             }
+
             return true;
+
         }
 
         internal Setup ParseSetup(string dir)
@@ -80,9 +87,15 @@ namespace ParsingSetups
                     bool flag5 = false;//Время
                     bool flag6 = false;//Количество прогонов
                     bool flag7 = false;//Процент отхода
+                    bool flag8 = false;//isPunch
+
+                    bool flag9 = false;//Блок информация об отдельной детали
+                    bool flag10 = false;//
+                    bool flag11 = false;//
 
                     while ((line = sr.ReadLine()) != null)
                     {
+                        if (line.Contains("TC2000")) { flag8 = true; }
                         setup.DateSpellingSetup = DateTime.Now.ToString();
                         if (flag1)
                         {
@@ -97,9 +110,19 @@ namespace ParsingSetups
 
                         if (flag2 && line.Contains("nbsp"))
                         {
-                            string[] c = line.Split('>');
-                            setup.NameSetup = c[1].Split('&')[0];
-                            flag2 = false;
+                            if (flag8)
+                            {
+                                string[] c = line.Split('>');
+                                setup.NameSetup = c[3].Split('&')[0];
+                                flag2 = false;
+                            }
+                            else
+                            {
+                                string[] c = line.Split('>');
+                                setup.NameSetup = c[1].Split('&')[0];
+                                flag2 = false;
+                            }
+                            
                         }
                         if (line.Contains("ИМЯ ПРОГРАММЫ"))
                         {
@@ -134,14 +157,14 @@ namespace ParsingSetups
                             }
                             flag3 = false;
                         }
-                        if (line.Contains("МАТЕРИАЛ (ЛИСТ)"))
+                        if (line.Contains("МАТЕРИАЛ (ЛИСТ)")|| line.Contains("ID МАТЕРИАЛА"))
                         {
                             flag3 = true;
                         }
 
                         if (flag4)
                         {
-                            if (line.Contains("."))
+                            if (line.Contains(".") && !line.Contains("!") || (line.Contains(" ")&&!line.Contains("nbsp") && !line.Contains("size") && !line.Contains("!")))
                             {
                                 setup.SizeListSetup += " " + line.Trim();
                             }
@@ -156,11 +179,19 @@ namespace ParsingSetups
                             flag4 = true;
                         }
 
-                        if (flag5 && line.Contains("nobr"))
+                        if (flag5 && line.Contains("nobr")||(flag5 && line.Contains("nbsp") && !line.Contains("МАШИННОЕ ВРЕМЯ")))
                         {
-                            string[] c = line.Split('>');
-                            setup.TimeSetup = c[1].Split('[')[0];
-                            flag5 = false;
+                            if (flag8)
+                            {
+                                setup.TimeSetup = line.Split('[')[0].Trim();
+                                flag5 = false;
+                            }
+                            else
+                            {
+                                string[] c = line.Split('>');
+                                setup.TimeSetup = c[1].Split('[')[0].Trim();
+                                flag5 = false;
+                            }
                         }
                         if (line.Contains("МАШИННОЕ ВРЕМЯ"))
                         {
@@ -191,20 +222,44 @@ namespace ParsingSetups
 
                         string name;
                         string count;
-                        if (line.Contains("ИМЯ ЛИСТА"))
-                        {
-                            break;
-                        }
+                        
                         if (line.Contains("NOID"))
                         {
                             string[] a = line.Split('>');
 
-                            if (a[11].Contains("GEO"))
+                            if (a[11].Contains("GEO")|| a[11].Contains("GMT"))
                             {
                                 name = new FileInfo(a[11].Split('&')[0]).Name;
                                 count = a[15].Split('&')[0];
                                 setup.DetailsSetup.Add(name, Convert.ToInt32(count) * Convert.ToInt32(setup?.NumberOfRunsSetup));
                             }
+                        }
+
+
+                        Detail detail = new Detail();
+                        if (line.Contains("РАЗМЕРЫ"))
+                        {
+                            string[] a = line.Split('>');
+                            string filename = new FileInfo(a.FirstOrDefault(x => x.ToLower().Contains("geo") || x.ToLower().Contains("gmt")).Split('&')[0]).Name;
+                            detail.NameDetail = filename.Substring(0, filename.Length-4);
+                            detail.SizesDetail = a.FirstOrDefault(x => x.Contains("x&nbsp")).Split('&')[0] + "x" + a.FirstOrDefault(x => x.Contains("x&nbsp")).Split('&')[2].Substring(5);
+                            detail.SurfaceDetail = a.FirstOrDefault(x => x.Contains("mm2")).Split('&')[0];
+                            detail.TimeOfProcessing = a.FirstOrDefault(x => x.Contains("min")).Split(' ')[0];
+                            if (!flag8)
+                            {
+                                detail.CuttingLength = a.Where(x => x.Contains("mm&")).ToArray()[1].Split('&')[0];
+                            }
+                            detail.WeightDetail = a.FirstOrDefault(x => x.Contains("kg")).Split('&')[0];
+                            setup.Details.Add(detail);
+
+                        }
+                        
+
+
+
+                        if (line.Contains("Tafellayout"))
+                        {
+                            break;
                         }
                     }
                 }
@@ -239,7 +294,7 @@ namespace ParsingSetups
                 DetailListBoxSetup.Items.Clear();
                 foreach (var item in setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text).DetailsSetup)
                 {
-                    DetailListBoxSetup.Items.Add(new TextBlock() { TextWrapping = TextWrapping.Wrap, Text = item.Key + " (" + item.Value + " / " + item.Value * Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text).NumberOfRunsSetup) + ")" });
+                    DetailListBoxSetup.Items.Add(new TextBlock() { TextWrapping = TextWrapping.Wrap, Text = item.Key + " (" + item.Value / Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock).Text).NumberOfRunsSetup) + " / " + item.Value + ")" });
                 }
             }
         }
@@ -248,69 +303,73 @@ namespace ParsingSetups
         {
             if (TBSearch.Text != "" && TBSearch.Text != " " && TBSearch.Text != null)
             {
-                LoadTreeView(setups.Where(x => x.NameSetup.Contains(TBSearch.Text)));
+                LoadTreeView(setups.Where(x => x.NameSetup.ToLower().Contains(TBSearch.Text.ToLower())).OrderBy(x=>x.NameSetup), details);
             }
             else
             {
-                LoadTreeView(setups);
+                LoadTreeView(setups, details);
             }
         }
 
         private void TreeViewSetups_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
-
-            StackPanel stackPanel = new StackPanel() { Name = (TreeViewSetups.SelectedItem as TextBlock)?.Text };
-            stackPanel.Orientation = Orientation.Horizontal;
-            TextBox textBox = new TextBox() { Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.NumberOfRunsSetup, Width = 30 };
-            TextBlock textBlock = new TextBlock() { Text = (TreeViewSetups.SelectedItem as TextBlock)?.Text };
-            stackPanel.Children.Add(textBox);
-            stackPanel.Children.Add(textBlock);
-            ContextMenu contextMenu = new ContextMenu();
-            MenuItem menuItemDelit = new MenuItem();
-            menuItemDelit.Header = "Удалить";
-            menuItemDelit.Click += (object sender2, RoutedEventArgs e2) =>
+            if ((TreeViewSetups.SelectedItem as TextBlock)?.Text!="" && TreeViewSetups.SelectedItem!=null)
             {
+                StackPanel stackPanel = new StackPanel();
+                stackPanel.Orientation = Orientation.Horizontal;
+                TextBox textBox = new TextBox() { Text = setups.FirstOrDefault(x => x.NameSetup == (TreeViewSetups.SelectedItem as TextBlock)?.Text)?.NumberOfRunsSetup, Width = 30 };
+                TextBlock textBlock = new TextBlock() { Text = (TreeViewSetups.SelectedItem as TextBlock)?.Text };
+                stackPanel.Children.Add(textBox);
+                stackPanel.Children.Add(textBlock);
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem menuItemDelit = new MenuItem();
+                menuItemDelit.Header = "Удалить";
+                menuItemDelit.Click += (object sender2, RoutedEventArgs e2) =>
+                {
+                    foreach (var item in AllDetailListBoxSetup.Items)
+                    {
+                        if (((item as StackPanel).Children[1] as TextBlock).Text == textBlock.Text)
+                        {
+                            AllDetailListBoxSetup.Items.Remove(item);
+                            break;
+                        }
+                    }
+                };
+                MenuItem menuItemDelitAll = new MenuItem();
+                menuItemDelitAll.Header = "Удалить всё";
+                menuItemDelitAll.Click += (object sender2, RoutedEventArgs e2) =>
+                {
+                    AllDetailListBoxSetup.Items.Clear();
+                };
+                contextMenu.Items.Add(menuItemDelit);
+                contextMenu.Items.Add(menuItemDelitAll);
+                stackPanel.ContextMenu = contextMenu;
+                bool flag = true;
                 foreach (var item in AllDetailListBoxSetup.Items)
                 {
-                    if ((item as StackPanel).Name == textBlock.Text)
+                    if (((item as StackPanel).Children[1] as TextBlock).Text == (TreeViewSetups.SelectedItem as TextBlock)?.Text)
                     {
-                        AllDetailListBoxSetup.Items.Remove(item);
-                        break;
+                        flag = false;
                     }
                 }
-            };
-            MenuItem menuItemDelitAll = new MenuItem();
-            menuItemDelitAll.Header = "Удалить всё";
-            menuItemDelitAll.Click += (object sender2, RoutedEventArgs e2) =>
-            {
-                AllDetailListBoxSetup.Items.Clear();
-            };
-            contextMenu.Items.Add(menuItemDelit);
-            contextMenu.Items.Add(menuItemDelitAll);
-            stackPanel.ContextMenu = contextMenu;
-            bool flag = true;
-            foreach (var item in AllDetailListBoxSetup.Items)
-            {
-                if ((item as StackPanel).Name == (TreeViewSetups.SelectedItem as TextBlock)?.Text)
+                if (flag)
                 {
-                    flag = false;
+                    AllDetailListBoxSetup.Items.Add(stackPanel);
                 }
-            }
-            if (flag)
-            {
-                AllDetailListBoxSetup.Items.Add(stackPanel);
-            }
-            else
-            {
-                foreach (var item in AllDetailListBoxSetup.Items)
+                else
                 {
-                    if ((item as StackPanel).Name == (TreeViewSetups.SelectedItem as TextBlock)?.Text)
+                    foreach (var item in AllDetailListBoxSetup.Items)
                     {
-                        ((item as StackPanel).Children[0] as TextBox).Text = Convert.ToString(Convert.ToInt32(((item as StackPanel).Children[0] as TextBox).Text) + Convert.ToInt32((stackPanel.Children[0] as TextBox).Text));
+                        if (((item as StackPanel).Children[1] as TextBlock).Text == (TreeViewSetups.SelectedItem as TextBlock)?.Text)
+                        {
+                            ((item as StackPanel).Children[0] as TextBox).Text = Convert.ToString(Convert.ToInt32(((item as StackPanel).Children[0] as TextBox).Text) + Convert.ToInt32((stackPanel.Children[0] as TextBox).Text));
+                        }
                     }
                 }
             }
+
+
+            
         }
 
         /// <summary>
@@ -321,13 +380,14 @@ namespace ParsingSetups
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             string result = CBFirstName.Text + "\n(" + DateMakingDetails.Text + ")\n";
-            Dictionary<string, int> dictAllDetails = new Dictionary<string, int>();
+            Dictionary<string, double> dictAllDetails = new Dictionary<string, double>();
             Dictionary<string, string[]> dictAllLists = new Dictionary<string, string[]>();
             foreach (var item1 in AllDetailListBoxSetup.Items)
             {
                 string size = setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).SizeListSetup.Trim();
                 string material = setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).MaterialSetup.Trim();
-                double waste = Convert.ToDouble(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).WasteSMSetup) * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text);
+                size = size + " (" + material + ")";
+                double waste = Convert.ToDouble(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).WasteSMSetup) * Convert.ToDouble(((item1 as StackPanel).Children[0] as TextBox).Text);
 
                 if (dictAllLists.ContainsKey(size) && dictAllLists[size][0] == material)
                 {
@@ -343,11 +403,11 @@ namespace ParsingSetups
 
                     if (dictAllDetails.ContainsKey(item2.Key))
                     {
-                        dictAllDetails[item2.Key] = dictAllDetails[item2.Key] + (item2.Value * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text));
+                        dictAllDetails[item2.Key] = dictAllDetails[item2.Key] + (item2.Value / Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).NumberOfRunsSetup) * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text));
                     }
                     else
                     {
-                        dictAllDetails.Add(item2.Key, item2.Value * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text));
+                        dictAllDetails.Add(item2.Key, item2.Value / Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).NumberOfRunsSetup) * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text));
                     }
                 }
             }
@@ -358,7 +418,7 @@ namespace ParsingSetups
             result += "\n";
             foreach (var item in dictAllLists)
             {
-                result += item.Key + " (" + item.Value[0] + ") - " + item.Value[1] + " шт. (отход " + item.Value[2] + " см2)\n";
+                result += item.Key + " - " + item.Value[1] + " шт. (отход " + item.Value[2] + " см2)\n";
             }
             Clipboard.SetText(result);
             if (DateMakingDetails.Text != "" && DateMakingDetails.Text != null)
@@ -377,7 +437,8 @@ namespace ParsingSetups
         private void UpdateTask_Click(object sender, RoutedEventArgs e)
         {
             setups = DB.ReadDBTools(QLiteConnection);
-            LoadTreeView(setups);
+            details = DB.ReadDBDetails(QLiteConnection);
+            LoadTreeView(setups, details);
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -393,8 +454,68 @@ namespace ParsingSetups
                 tempSetup.BusinessWasteSetup = TBBusinessWasteSetup.Text;
                 DB.UpdateDBSetup(new SQLiteConnection(QLiteConnection), tempSetup);
                 setups = DB.ReadDBTools(QLiteConnection);
-                LoadTreeView(setups);
+                LoadTreeView(setups, details);
             }
+        }
+
+        private void TreeViewDetails_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (TreeViewDetails.SelectedItem != null)
+            {
+                TBNameDetail.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.NameDetail;
+                TBMaterialDetail.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.MaterialDetail;
+                TBSizesDetail.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.SizesDetail;
+                TBSurfaceDetail.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.SurfaceDetail;
+                TBTimeOfProcessing.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.TimeOfProcessing;
+                TBCuttingLength.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.CuttingLength;
+                TBWeightDetail.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.WeightDetail;
+                TBBendLength.Text = details.FirstOrDefault(x => x.NameDetail == (TreeViewDetails.SelectedItem as TextBlock)?.Text)?.BendLength;
+
+            }
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            Detail detail = new Detail();
+            detail.NameDetail = TBNameDetail.Text;
+            detail.BendLength = TBBendLength.Text;
+            DB.UpdateDBDetail(new SQLiteConnection(QLiteConnection), detail);
+            details = DB.ReadDBDetails(QLiteConnection);
+            LoadTreeView(setups, details);
+        }
+
+        private void UpdateDBD_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls";
+            openFileDialog.Multiselect = true;
+            openFileDialog.ShowDialog();
+            foreach (var item in openFileDialog.FileNames)
+            {
+                var colDet = Excel.ExcelDataLoad(item,2);
+                DB.AddDBDetails(new SQLiteConnection(QLiteConnection),colDet);
+            }
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(TBNameDetail.Text);
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls";
+            saveFileDialog.ShowDialog();
+            Excel.ExcelDataRead(details, saveFileDialog.FileName);
+            var result = MessageBox.Show("Переместить элементы в основной список?", "Внимание", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                DB.DBExecuteNonQuery(QLiteConnection, "INSERT OR IGNORE INTO AllDetails(NameDetail, SizesDetail, SurfaceDetail, TimeOfProcessing, CuttingLength, WeightDetail, Material, BendLength) SELECT Details.NameDetail, Details.SizesDetail, Details.SurfaceDetail, Details.TimeOfProcessing, Details.CuttingLength, Details.WeightDetail, Details.Material, Details.BendLength FROM Details LEFT OUTER JOIN AllDetails ON Details.NameDetail = AllDetails.NameDetail WHERE AllDetails.NameDetail IS NULL");
+                details = DB.ReadDBDetails(QLiteConnection);
+                LoadTreeView(setups, details);
+            }
+
         }
     }
 }

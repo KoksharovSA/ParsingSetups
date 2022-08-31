@@ -11,93 +11,177 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition/>
-                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="265*"/>
-                <ColumnDefinition Width="131*"/>
-            </Grid.ColumnDefinitions>
-            <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <Menu Grid.Row="0" >
                 <MenuItem Header="Меню" Height="25" FontSize="14">
                     <MenuItem Header="Обновить" Name="UpdateTask" Click="UpdateTask_Click" />
                     <MenuItem Header="Выход" Click="MenuItem_Click" />
                 </MenuItem>
+                <MenuItem Header="БД" Height="25" FontSize="14">
+                    <MenuItem Header="Обновить БДД" Name="UpdateDBD" Click="UpdateDBD_Click"/>
+                    <MenuItem Header="Выгрузить БД" Click="MenuItem_Click_2" />
+                </MenuItem>
             </Menu>
-            <Button Grid.Column="0" Grid.Row="2" Content="Добавить план наладки" HorizontalAlignment="Right" VerticalAlignment="Center" Width="180" Click="Button_Click" Height="25" Margin="0,3,10,2"/>
-            <Button Grid.Column="2" Grid.Row="2" Content="Сформировать список" HorizontalAlignment="Right" VerticalAlignment="Center" Width="242" Height="25" Margin="0,3,10,2" Click="Button_Click_1"/>
-            <GroupBox x:Name="GroupBoxSetup" Grid.Column="1" Header="GroupBox" Margin="10,0,5,0" Grid.Row="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="270"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Путь:" VerticalAlignment="Top" />
-                            <TextBlock x:Name="TBDirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="207"/>
+            <TabControl Grid.Row="1" >
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="3">Setup</TextBlock>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Материал:" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TBMaterialSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Размер листа:" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TBSizeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Время выполнения:" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TBTimeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Количество прогонов:" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TBNumberOfRunsSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Процент отхода:" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TBWastePercentageSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Площадь отхода:" VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TBWasteSMSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Деловой отход:" VerticalAlignment="Top"/>
-                            <TextBox x:Name="TBBusinessWasteSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"  Width="105"/>
-                            <Button Height="20" Margin="10,10,0,0" Content="" BorderThickness="1" Width="20" Padding="3" Click="Button_Click_2" >
-                                <Button.Background>
-                                    <ImageBrush ImageSource="kisspng-computer-icons-portable-network-graphics-download-refresh-svg-png-icon-free-download-372448-onl-5b76aee381b289.4918287215345046755313.png" Stretch="Uniform" Opacity="0.5"/>
-                                </Button.Background>
-                            </Button>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,4,5,0" TextWrapping="Wrap" Text="Дата внесения:" VerticalAlignment="Top" Width="90" />
-                            <DatePicker Name="DateSpellingSetup" Width="141" BorderBrush="{x:Null}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Width="255">
-                            <TextBlock HorizontalAlignment="Left" Margin="10,4,5,0" TextWrapping="Wrap" Text="Дата работы:" VerticalAlignment="Top" Width="90" />
-                            <DatePicker Name="DateRunSetupp" Width="141" BorderBrush="{x:Null}"/>
-                        </StackPanel>                        
-                    </StackPanel>
-                    <ListBox Grid.Column="1" x:Name="DetailListBoxSetup"/>
-                </Grid>
+                    </TabItem.Header>
+                    <TabItem.Content>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1"/>
+                                <RowDefinition/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="189*"/>
+                                <ColumnDefinition Width="334*"/>
+                                <ColumnDefinition Width="259*"/>
+                            </Grid.ColumnDefinitions>
 
-
-            </GroupBox>
-            <Image Margin="176,10,10,332" Grid.Row="1" Grid.Column="0" Source="kisspng.png" Opacity="0.5"/>
-            <TextBox x:Name="TBSearch" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="161" KeyUp="TBSearch_KeyUp"/>
-            <TreeView x:Name="TreeViewSetups" HorizontalAlignment="Right" Margin="0,38,10,5" Grid.Row="1" VerticalAlignment="Stretch" Width="180" SelectedItemChanged="TreeViewSetups_SelectedItemChanged" MouseDoubleClick="TreeViewSetups_MouseDoubleClick"/>
-            <DatePicker x:Name="DateMakingDetails" Grid.Row="1" Grid.Column="2" Height="25" VerticalAlignment="Top" Margin="5,10,5,0"/>
-            <ComboBox x:Name="CBFirstName" Grid.Row="1" Grid.Column="2" Height="25" VerticalAlignment="Top" Margin="5,40,5,0">
-                <ComboBoxItem Content="Агафонов"/>
-                <ComboBoxItem Content="Баранович"/>
-                <ComboBoxItem Content="Марусич"/>
-                <ComboBoxItem Content="Марков"/>
-                <ComboBoxItem Content="Новосёлов"/>
-                <ComboBoxItem Content="Осинцев"/>
-                <ComboBoxItem Content="Стуков"/>
-            </ComboBox>
-            <ListBox Grid.Row="1" Grid.Column="2" x:Name="AllDetailListBoxSetup" Margin="5,70,5,5"/>
+                            <Button Grid.Column="0" Grid.Row="2" Content="Добавить план наладки" HorizontalAlignment="Right" VerticalAlignment="Center" Width="180" Click="Button_Click" Height="25" Margin="0,3,10,2"/>
+                            <Button Grid.Column="3" Grid.Row="2" Content="Сформировать список" HorizontalAlignment="Right" VerticalAlignment="Center" Width="242" Height="25" Margin="0,3,10,2" Click="Button_Click_1"/>
+                            <GroupBox x:Name="GroupBoxSetup" Grid.Column="1" Header="GroupBox" Margin="10,0,5,0" Grid.Row="1" Grid.ColumnSpan="2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="270"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Путь:" VerticalAlignment="Top" />
+                                            <TextBlock x:Name="TBDirSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="207"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Материал:" VerticalAlignment="Top"/>
+                                            <TextBlock x:Name="TBMaterialSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Размер листа:" VerticalAlignment="Top"/>
+                                            <TextBlock x:Name="TBSizeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Время выполнения:" VerticalAlignment="Top"/>
+                                            <TextBlock x:Name="TBTimeSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Количество прогонов:" VerticalAlignment="Top"/>
+                                            <TextBlock x:Name="TBNumberOfRunsSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Процент отхода:" VerticalAlignment="Top"/>
+                                            <TextBlock x:Name="TBWastePercentageSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Площадь отхода:" VerticalAlignment="Top"/>
+                                            <TextBlock x:Name="TBWasteSMSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Деловой отход:" VerticalAlignment="Top"/>
+                                            <TextBox x:Name="TBBusinessWasteSetup" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"  Width="105"/>
+                                            <Button Height="20" Margin="10,10,0,0" Content="" BorderThickness="1" Width="20" Padding="3" Click="Button_Click_2" >
+                                                <Button.Background>
+                                                    <ImageBrush ImageSource="kisspng-computer-icons-portable-network-graphics-download-refresh-svg-png-icon-free-download-372448-onl-5b76aee381b289.4918287215345046755313.png" Stretch="Uniform" Opacity="0.5"/>
+                                                </Button.Background>
+                                            </Button>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,4,5,0" TextWrapping="Wrap" Text="Дата внесения:" VerticalAlignment="Top" Width="90" />
+                                            <DatePicker Name="DateSpellingSetup" Width="141" BorderBrush="{x:Null}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal"  Width="255">
+                                            <TextBlock HorizontalAlignment="Left" Margin="10,4,5,0" TextWrapping="Wrap" Text="Дата работы:" VerticalAlignment="Top" Width="90" />
+                                            <DatePicker Name="DateRunSetupp" Width="141" BorderBrush="{x:Null}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <ListBox Grid.Column="1" x:Name="DetailListBoxSetup"/>
+                                </Grid>
+                            </GroupBox>
+                            <Image Margin="176,10,10,292" Grid.Row="1" Grid.Column="0" Source="kisspng.png" Opacity="0.5"/>
+                            <TextBox x:Name="TBSearch" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="161" KeyUp="TBSearch_KeyUp"/>
+                            <TreeView x:Name="TreeViewSetups" HorizontalAlignment="Right" Margin="0,38,10,5" Grid.Row="1" VerticalAlignment="Stretch" Width="180" SelectedItemChanged="TreeViewSetups_SelectedItemChanged" MouseDoubleClick="TreeViewSetups_MouseDoubleClick"/>
+                            <DatePicker x:Name="DateMakingDetails" Grid.Row="1" Grid.Column="3" Height="25" VerticalAlignment="Top" Margin="5,10,5,0"/>
+                            <ComboBox x:Name="CBFirstName" Grid.Row="1" Grid.Column="3" Height="25" VerticalAlignment="Top" Margin="5,40,5,0">
+                                <ComboBoxItem Content="Агафонов"/>
+                                <ComboBoxItem Content="Баранович"/>
+                                <ComboBoxItem Content="Марусич"/>
+                                <ComboBoxItem Content="Марков"/>
+                                <ComboBoxItem Content="Новосёлов"/>
+                                <ComboBoxItem Content="Осинцев"/>
+                                <ComboBoxItem Content="Стуков"/>
+                                <ComboBoxItem Content="Пукин"/>
+                                <!--<ComboBoxItem Content="Сафиуллин"/>-->
+                            </ComboBox>
+                            <ListBox Grid.Row="1" Grid.Column="3" x:Name="AllDetailListBoxSetup" Margin="5,70,5,5"/>
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="3">Детали</TextBlock>
+                        </StackPanel>
+                    </TabItem.Header>
+                    <TabItem.Content>
+                        <Grid x:Name="GridDetail">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TreeView Grid.Column="0" x:Name="TreeViewDetails" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Stretch" Width="280" SelectedItemChanged="TreeViewDetails_SelectedItemChanged"/>
+                            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Наименование детали" VerticalAlignment="Top" />
+                                    <TextBlock x:Name="TBNameDetail" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="255"/>
+                                    <StackPanel.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Копировать" Click="MenuItem_Click_1"></MenuItem>
+                                        </ContextMenu>
+                                    </StackPanel.ContextMenu>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Материал детали:" VerticalAlignment="Top"/>
+                                    <TextBlock x:Name="TBMaterialDetail" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Размер детали:" VerticalAlignment="Top"/>
+                                    <TextBlock x:Name="TBSizesDetail" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Площадь детали:" VerticalAlignment="Top"/>
+                                    <TextBlock x:Name="TBSurfaceDetail" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Время обработки:" VerticalAlignment="Top"/>
+                                    <TextBlock x:Name="TBTimeOfProcessing" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Длина реза:" VerticalAlignment="Top"/>
+                                    <TextBlock x:Name="TBCuttingLength" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"  Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Масса детали:" VerticalAlignment="Top"/>
+                                    <TextBlock x:Name="TBWeightDetail" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Width="500">
+                                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Длина гиба:" VerticalAlignment="Top"/>
+                                    <TextBox x:Name="TBBendLength" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"  Width="200"/>
+                                    <Button Height="20" Margin="10,10,0,0" Content="" BorderThickness="1" Width="20" Padding="3" Click="Button_Click_3" >
+                                        <Button.Background>
+                                            <ImageBrush ImageSource="kisspng-computer-icons-portable-network-graphics-download-refresh-svg-png-icon-free-download-372448-onl-5b76aee381b289.4918287215345046755313.png" Stretch="Uniform" Opacity="0.5"/>
+                                        </Button.Background>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+            </TabControl>
         </Grid>
+
     </Grid>
 </Window>
