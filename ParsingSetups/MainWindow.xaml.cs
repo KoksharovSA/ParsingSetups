@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -443,7 +444,11 @@ namespace ParsingSetups
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            var result = MessageBox.Show("Вы точно хотите выйти из программы?", "Окно для Ксении", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                this.Close();
+            }
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -507,7 +512,7 @@ namespace ParsingSetups
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls";
             saveFileDialog.ShowDialog();
-            Excel.ExcelDataRead(details, saveFileDialog.FileName);
+            Excel.ExcelDataWrite(details, saveFileDialog.FileName);
             var result = MessageBox.Show("Переместить элементы в основной список?", "Внимание", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
@@ -516,6 +521,60 @@ namespace ParsingSetups
                 LoadTreeView(setups, details);
             }
 
+        }
+
+        private void ClickCreateTable(object sender, RoutedEventArgs e)
+        {
+            string employeeName = CBFirstName.Text;
+            string dateRun = DateMakingDetails.Text;
+            Dictionary<string, double> dictAllDetails = new Dictionary<string, double>();
+            Dictionary<string, string[]> dictAllLists = new Dictionary<string, string[]>();
+            foreach (var item1 in AllDetailListBoxSetup.Items)
+            {
+                string size = setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).SizeListSetup.Trim();
+                string material = setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).MaterialSetup.Trim();
+                size = size + " (" + material + ")";
+                double waste = Convert.ToDouble(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).WasteSMSetup) * Convert.ToDouble(((item1 as StackPanel).Children[0] as TextBox).Text);
+
+                if (dictAllLists.ContainsKey(size) && dictAllLists[size][0] == material)
+                {
+                    dictAllLists[size][1] = (Convert.ToInt32(dictAllLists[size][1]) + Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text)).ToString();
+                    dictAllLists[size][2] = (Convert.ToInt32(dictAllLists[size][2]) + Convert.ToInt32(waste)).ToString();
+                }
+                else
+                {
+                    dictAllLists.Add(size, new string[3] { material, Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text).ToString(), Convert.ToInt32(waste).ToString() });
+                }
+                foreach (var item2 in setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).DetailsSetup)
+                {
+                    if (dictAllDetails.ContainsKey(item2.Key))
+                    {
+                        dictAllDetails[item2.Key] = dictAllDetails[item2.Key] + (item2.Value / Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).NumberOfRunsSetup) * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text));
+                    }
+                    else
+                    {
+                        dictAllDetails.Add(item2.Key, item2.Value / Convert.ToInt32(setups.FirstOrDefault(x => x.NameSetup == ((item1 as StackPanel).Children[1] as TextBlock).Text).NumberOfRunsSetup) * Convert.ToInt32(((item1 as StackPanel).Children[0] as TextBox).Text));
+                    }
+                }
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Excel files (*.xlsx;*.xls)|*.xlsx;*.xls";
+            saveFileDialog.FileName = employeeName + "_" + dateRun;
+            saveFileDialog.ShowDialog();
+            Excel.ExcelResultWrite(dictAllDetails, dictAllLists, employeeName, dateRun, saveFileDialog.FileName);
+
+            if (DateMakingDetails.Text != "" && DateMakingDetails.Text != null)
+            {
+                Collection<Setup> colset = new Collection<Setup>();
+                foreach (var item in AllDetailListBoxSetup.Items)
+                {
+                    var tempSetup = setups.FirstOrDefault(x => x.NameSetup == ((item as StackPanel).Children[1] as TextBlock).Text);
+                    tempSetup.DateRunSetup = DateMakingDetails.Text;
+                    colset.Add(tempSetup);
+                }
+                DB.UpdateDBSetup(new SQLiteConnection(QLiteConnection), colset);
+            }
         }
     }
 }
