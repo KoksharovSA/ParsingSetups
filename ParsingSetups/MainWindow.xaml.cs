@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
@@ -22,7 +23,7 @@ namespace ParsingSetups
     {
         IEnumerable<Setup> setups = new Collection<Setup>();
         IEnumerable<Detail> details = new Collection<Detail>();
-        string QLiteConnection = "Data source=Setups.db;Version=3";
+        string QLiteConnection = Properties.Settings.Default.sQLiteConnectionString;
         public MainWindow()
         {
             InitializeComponent();

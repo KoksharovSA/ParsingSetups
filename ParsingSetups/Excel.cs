@@ -232,7 +232,7 @@ namespace ParsingSetups
                             currentRow += 1;
                         }
                         currentRow += 1;
-                        excelSheet.Cells[currentRow, 1] = "Материал";
+                        excelSheet.Cells[currentRow, 1] = "Размеры";
                         excelSheet.Cells[currentRow, 1].EntireRow.Font.Bold = true;
                         excelSheet.Cells[currentRow, 2] = "Количество";
                         excelSheet.Cells[currentRow, 3] = "Отход(см2)";

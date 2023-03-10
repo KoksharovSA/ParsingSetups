@@ -55,7 +55,29 @@ namespace ParsingSetups
             return true;
         }
 
-
+        internal static bool AddLog(SQLiteConnection sQLiteConnection, DateTime date, Collection<Detail> details, IEnumerable<Setup> setups, DateTime dateRun, string employee)
+        {
+            sQLiteConnection.Open();
+            foreach (var item in details)
+            {
+                try
+                {
+                    using (SQLiteCommand command1 = sQLiteConnection.CreateCommand())
+                    {
+                        command1.CommandText = "INSERT OR IGNORE INTO Details(NameDetail, SizesDetail, SurfaceDetail, TimeOfProcessing, CuttingLength, WeightDetail, Material, BendLength) VALUES('" + item.NameDetail + "', '" + item.SizesDetail + "', '" + item.SurfaceDetail + "', '" + item.TimeOfProcessing + "', '" + item.CuttingLength + "', '" + item.WeightDetail + "', '" + item.MaterialDetail + "', '" + item.BendLength + "')";
+                        command1.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    sQLiteConnection.Close();
+                    MessageBox.Show(ex.Message, "Ошибка");
+                    return false;
+                }
+            }
+            sQLiteConnection.Close();
+            return true;
+        }
 
 
 

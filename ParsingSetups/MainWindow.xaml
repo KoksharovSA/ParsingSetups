@@ -44,7 +44,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Button Grid.Column="0" Grid.Row="2" Content="Добавить план наладки" HorizontalAlignment="Right" VerticalAlignment="Center" Width="180" Click="Button_Click" Height="25" Margin="0,3,10,2"/>
-                            <Button Grid.Column="3" Grid.Row="2" Content="Список" HorizontalAlignment="Left" VerticalAlignment="Center" Width="110" Height="25" Margin="10,3,10,2" Click="Button_Click_1"/>
+                            <Button Grid.Column="3" Grid.Row="2" IsEnabled="False" Content="Список" HorizontalAlignment="Left" VerticalAlignment="Center" Width="110" Height="25" Margin="10,3,10,2" Click="Button_Click_1"/>
                             <Button Grid.Column="3" Grid.Row="2" Content="Таблица" HorizontalAlignment="Right" VerticalAlignment="Center" Width="110" Height="25" Margin="0,3,10,2" Click="ClickCreateTable"/>
                             <GroupBox x:Name="GroupBoxSetup" Grid.Column="1" Header="GroupBox" Margin="10,0,5,0" Grid.Row="1" Grid.ColumnSpan="2">
                                 <Grid>
